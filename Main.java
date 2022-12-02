@@ -7,6 +7,9 @@ public class Main {
 		Loading l = new Loading();
 		ArrayList<String> d = l.LoadDictionary();
 		System.out.println(l.contains(d, "aback"));
+		ArrayList<String> b = l.LoadPoem();
+		System.out.println(l.contains(d, b.get(4)));
+		//l.printPoem();
 	}
 
 	
