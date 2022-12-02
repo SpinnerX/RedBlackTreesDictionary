@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,8 +33,8 @@ public class Loading {
     public ArrayList<String> LoadPoem() {
         ArrayList<String> poem = new ArrayList<String>();
         try {
-            File dic = new File("C:\\Users\\jansc\\Downloads\\poem.txt");
-            Scanner s = new Scanner(dic);
+            URL dic = new URL("https://raw.githubusercontent.com/schmij03/RedBlackTreesDictionary/main/poem.txt");
+            Scanner s = new Scanner(dic.openStream());
 
             while (s.hasNextLine()) {
                 poem.add(s.nextLine());
