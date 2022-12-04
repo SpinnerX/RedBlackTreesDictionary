@@ -1,8 +1,12 @@
 JAVAC = $(shell find . -name '*.java')
 
-Main.class: 
-	javac $(JAVAC)
-	java Main
+a.out: Main.class
+	@echo "java Main" > a.out
+	chmod a+x a.out
+
+
+Main.class: Main.java
+	javac Main.java
 
 clean:
-	rm -rf *.class
+	rm -rf *.class a.out
