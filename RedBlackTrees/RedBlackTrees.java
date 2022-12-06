@@ -1,122 +1,290 @@
 package RedBlackTrees;
 
-import javax.xml.crypto.Data;
-
 public class RedBlackTrees {
-    public Node root = null;
-    public int size = 1;
+    private Node root;
+	private String results = "";
+    private int _size=10;
 
-    public RedBlackTrees(){}
+	
 
-    public void add(String data){
-        if(isEmpty()){
-            root = new Node(data);
-            return;
-        }
-
-        Node current = root;
-
-        while(true){
-            if(current.data.equals(data)) return;
-
-            if(current.data.compareTo(data) != 0){
-                if(current.left == null){
-                    current.left = new Node(data);
-                    size++;
-                    return;
-                }
-                current = current.left;
-            }
-            else{
-                if(current.right == null){
-                    current.right = new Node(data);
-                    size++;
-                    return;
-                }
-                current = current.right;
-            }
-        }
-    }
+	// place a new node in the RB tree with data the parameter and color it red. 
+	public void add(String data){ //this < that  <0.  this > that  >0
+		// Initialize new Node containing data (default is red).
+		Node addedNode = new Node(data);
+		
+		// If root is null, set root to be data.
+		if(root == null) root = addedNode;
+		else {
+			// Initialize currentNode and prevNode variables.
+			Node currentNode = root;
+			Node prevNode = null;
+			
+			// Continue to loop until currentNode is a leaf.
+			while(currentNode != null) {
+				// Sets prevNode to currentNode.
+				prevNode = currentNode;
+				
+				// If value of addedNode is less than currentNode, 
+				// move to left side of tree.
+				if(addedNode.compareTo(currentNode) < 0) {
+					// Set currentNode to left child of currentNode.
+					currentNode = currentNode.left;
+					// If currentNode is a leaf, set left child of prevNode to addedNode.
+					if(currentNode == null) {
+						prevNode.left = addedNode;
+						prevNode.left.parent = prevNode;
+                        _size++;
+					}
+				}
+				// If value of addedNode is greater than or equal to currentNode, 
+				// move to right side of tree.
+				else {
+					// Set currentNode to right child of currentNode.
+					currentNode = currentNode.right;
+					// If currentNode is a leaf, set right child of prevNode to addedNode.
+					if(currentNode == null) {
+						prevNode.right = addedNode;
+						prevNode.right.parent = prevNode;
+                        _size++;
+					}
+				}
+			}
+		}
+		// Makes sure red black tree properties are still maintained after adding addedNode.
+		rebalance(addedNode);
+	}
 
     public void remove(String data){
-        if(isEmpty()) return;
 
-        Node current = root;
-        Node prev = null;
+    }
 
-        while(current != null && !current.data.equals(data)){
-            prev = current;
-            if(data.length() < current.data.length()) current = current.left;
-            else current = current.right;
-        }
+	// Searches for a key and returns node with same key; else returns null.
+	/*public Node contains(String k){ 
+		if(root == null) return null;
 
-        if(current.left == null || current.right == null){
-            Node newNode;
+		Node current = root;
+		while(current != null){
+			if(current.key.equals(k)) return current;
+			if(current.key.compareTo(k) > 0) current = current.left;
+			else current = current.right;
+		}
 
-            if(current.left == null) newNode = current.right;
-            else newNode = current.left;
+		return null;
+	}*/
 
-            if(prev == null) return;
+    public boolean contains(String k){
+        if(root == null) return false;
 
-            if(current == prev.left) prev.left = newNode;
-            else prev.right = newNode;
-            size--;
-        }
-        else{
-            Node p = null;
-            Node temp = current.right;
+		Node current = root;
+		while(current != null){
+			if(current.key.equals(k)) return true;
+			if(current.key.compareTo(k) > 0) current = current.left;
+			else current = current.right;
+		}
 
-            while(temp.left != null){
-                p = temp;
-                temp = temp.left;
+		return false;
+    }
+
+    // Returns the sibling of Node<Key> n; if not found return null.
+    public Node siblings(Node n){
+        // Initialize parent variable to be parent of Node n.
+        Node parent = n.parent;
+
+        // If Node n does not have a parent, return null.
+        if(parent == null) {
+            return null;
+        } else {
+            // If Node n is a left child of parent, return rightChild of parent.
+            if(isLeftChild(parent, n)) {
+                return parent.right;
+            } 
+            // Else, return leftChild of parent.
+            else {
+                return parent.left;
             }
-
-
-            if(p != null) p.left = temp.right;
-            else current.right = temp.right;
-
-            current.data = temp.data;
-            size--;
         }
-
     }
 
-    public boolean contains(String data){
-        if(isEmpty()) return false;
+    // Returns the aunt of Node<Key> n; if not found return null.
+    public Node aunt(Node n){
+        // Initialize parent variable to be parent of Node n.
+        Node parent = n.parent;
 
-        Node current = root;
-
-        while(current != null){
-            if(current.data.equals(data)) return true;
-            if(data.length() < current.data.length()) current = current.left;
-            else current = current.right;
-        }
-
-        return false;
+        // If parent of n is null, return null.
+        if(parent == null) return null;
+        // Else, use getSibling method to get sibling of parent of Node n.
+        else return siblings(parent);
     }
 
-    // rebalances RBT
-    public void reblance(){}
+	// Returns grandparent of Node n.
+	public Node grandparent(Node n){
+		return n.parent.parent;
+	}
 
-    // recoloring the entire R-B-T
-    public void recoloring(){}
+	// Rotates red black tree left.
+	public void rotateLeft(Node x){
+		// y is initialized to be the right child of x.
+		Node y = x.right;
+		
+		// x's right child becomes y's left child.
+        x.right = y.left;
+		
+		// If y has a left child, then the parent of y's left child becomes x.
+		if(y.left != null) y.left.parent = x;
+		
+		// Link x's parent to y's parent.
+		y.parent = x.parent;
+		
+		// If x was the root, change it so y is the new root.
+		if(x.parent == null) root = y;
+		
+        // If x is the left child of its parent, set left child of x's parent to y.
+		else if(x.compareTo(x.parent.left) == 0) x.parent.left = y;
+		
+        // Else, set right child of x's parent to y.
+		else x.parent.right = y;
 
+		// Set left child of y to x.
+		y.left = x;
+		// Set parent of x to y.
+		x.parent = y;
+	}    
 
-    public void updateColor() { }
-    public void updateColorLabel(){}
+	// Rotates red black tree right.
+	public void rotateRight(Node y){
 
+		// x is initialized to be y's left child.
+		// assign x to the left side of y's childs.
+		Node x = y.left;
+		
+		y.left = x.right; // Left child of y is now right child of x.
+		
+		if(x.right != null) x.right.parent = y; // x has a right child, set its' parent to y.
 
-    public void print(){ recursive_print(root); }
+		
+		x.parent = y.parent; // assign y's parent to x's parent.
+		
+		if(y.parent == null) root = x; // y is the root, change it so x is the new root.
+		else if(y.compareTo(y.parent.right) == 0) y.parent.right = x; // y is the right child, set right child of y's parent to x.
+		else y.parent.left = x; // set left child of y's parent to x.
+		
+		x.right = y; // Set right child of x to y.
+		y.parent = x; // Set parent of y to x.
+	}
 
-    public boolean isEmpty() { return root == null; }
+	// Recursively traverses tree to make it a red black tree.
+	public void rebalance(Node current) {
+		// If current is root, make it black and quit.
+		if(current == root) {
+			current.isRed = false;
+			current.color = 1;
+			return;
+		} 
+		
+		// If parent of current is black, quit.
+		if(!current.parent.isRed) return;
+		
+		// If current is red and parent of current is red, fixing is needed.
+		if(current.isRed && current.parent.isRed) {
+			// If aunt of current is empty or black:
+			if(aunt(current) == null || !aunt(current).isRed) {
+				// If current is the right child of its parent and its parent is the left child of the grandparent:
+				if(!isLeftChild(current.parent, current) && isLeftChild(grandparent(current), current.parent)) {
+					// Rotate the parent left.
+					rotateLeft(current.parent);
+					// Recursively fix tree starting with parent of current.
+					rebalance(current.parent);
+				} 
+				// If current is the left child of its parent and its parent is the right child of the grandparent:
+				else if(isLeftChild(current.parent, current) && !isLeftChild(grandparent(current), current.parent)) {
+					// Rotate the parent right.
+					rotateRight(current.parent);
+					// Recursively fix tree starting with parent of current.
+					rebalance(current.parent);
+				} 
+				// If current is the left child of its parent and its parent is the left child of the grandparent:
+				else if(isLeftChild(current.parent, current) && isLeftChild(grandparent(current), current.parent)) {
+					// Make parent of current black.
+					current.parent.isRed = false;
+					current.parent.color = 1;
+					// Make grandparent of current red.
+					grandparent(current).isRed = true;
+					grandparent(current).color = 0;
+					// Rotate the grandparent to the right and quit.
+					rotateRight(grandparent(current));
+					return;
+				} 
+				// If current is the right child of its parent and its parent is the right child of the grandparent:
+				else if(!isLeftChild(current.parent, current) && !isLeftChild(grandparent(current), current.parent)) {
+					// Make parent of current black.
+					current.parent.isRed = false;
+					current.parent.color = 1;
+					// Make grandparent of current red.
+					grandparent(current).isRed = true;
+					grandparent(current).color = 0;
+					// Rotate the grandparent to the left and quit.
+					rotateLeft(grandparent(current));
+					return;
+				}
+			} 
+			// If aunt of current is red:
+			else if(aunt(current).isRed){
+				// Make the parent of current black.
+				current.parent.isRed = false;
+				current.parent.color = 1;
+				// Make the aunt of current black.
+				aunt(current).isRed = false;
+				aunt(current).color = 1;
+				// Make the grandparent of current red.
+				grandparent(current).isRed = true;
+				grandparent(current).color = 0;
+				// Recursively fix the tree starting with grandparent of current.
+				rebalance(grandparent(current));
+			}
+		}
+	}
 
-    public int size(){ return size; }
+	public String getResults(){ return results; }
 
-    private void recursive_print(Node temp){
-        if(temp == null) return;
+    public int size(){ return _size; }
+
+	public boolean isEmpty(Node n){ return (n.key == null); }
+
+	public boolean isLeftChild(Node parent, Node child){ return child.compareTo(parent) < 0; }
+
+    // Prints tree in preorder format starting with the root.
+	//preorder: visit, go left, go right
+	public void print(){ recursive_print(root); }
+
+	// Prints tree in preorder format.
+	public void recursive_print(Node temp){
+		if(temp == null) return;
 
         recursive_print(temp.left);
-        System.out.println(temp.data);
+        System.out.print(temp.key + " ");
         recursive_print(temp.right);
-    }
+	}
+
+
+	public void preOrderVisit(String label) {
+		preOrderVisit(root, label);
+	}
+	
+	private void preOrderVisit(Node n, String label) {
+		if (n == null) return;
+		if(label == "Visit 1") visits(n);
+		else visit(n);
+
+		preOrderVisit(n.left, label);
+		preOrderVisit(n.right, label);
+	}
+	
+	// Adds only the data to the results string.
+	private void visit(Node n){ results += n.key; }
+
+	// Print add information to the results string.
+	private void visits(Node n){
+		if(!(n.key).equals("") && n.parent == null) results = results +"Color: "+n.color+", Key:"+n.key+" Parent: \n";
+    	else if(!(n.key).equals("")) results = results +"Color: "+n.color+", Key:"+n.key+" Parent: "+n.parent.key+"\n";
+	}
 }
