@@ -1,21 +1,23 @@
 package RedBlackTrees;
 
 public class Node {
+    public String key;  		  
+    public Node parent;
+    public Node left;
+    public Node right;
+    public boolean isRed;
+    public int color;
+    
     public Node(String data){
-        this.data  = data;
+        this.key = data;
+        parent = null;
+        left = null;
+        right = null;
+        isRed = true;
+        color = 0; // 0 - RED, 1 - BLACK
     }
-
-    public Node(String data, boolean isRed, String label){
-        this.data = data;
-        this.isRed = isRed;
-        this.label = label;
-    }
-
-    Node left=null;
-    Node right=null;
-    String data=""; // contains words.
-    boolean isRed = false; // true = red, false = black
-    String label = ""; // labels node as RED or BLACK
-
-    public boolean red() { return isRed; }
+    
+    //this < that  < 0
+    //this > that  > 0
+    public int compareTo(Node n) { return key.compareTo(n.key); }
 }
