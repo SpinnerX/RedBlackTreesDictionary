@@ -54,24 +54,7 @@ public class RedBlackTrees {
 		rebalance(addedNode);
 	}
 
-    public void remove(String data){
-
-    }
-
-	// Searches for a key and returns node with same key; else returns null.
-	/*public Node contains(String k){ 
-		if(root == null) return null;
-
-		Node current = root;
-		while(current != null){
-			if(current.key.equals(k)) return current;
-			if(current.key.compareTo(k) > 0) current = current.left;
-			else current = current.right;
-		}
-
-		return null;
-	}*/
-
+	// Searches for a key and returns true with same key; else returns false.
     public boolean contains(String k){
         if(root == null) return false;
 
@@ -84,6 +67,20 @@ public class RedBlackTrees {
 
 		return false;
     }
+
+	// Searches for a key and returns node with same key; else returns null.
+	public Node containsNode(String k){
+		if(root == null) return null;
+
+		Node current = root;
+		while(current != null){
+			if(current.key.equals(k)) return current;
+			if(current.key.compareTo(k) > 0) current = current.left;
+			else current = current.right;
+		}
+
+		return null;
+	}
 
     // Returns the sibling of Node<Key> n; if not found return null.
     public Node siblings(Node n){
@@ -148,7 +145,7 @@ public class RedBlackTrees {
 		y.left = x;
 		// Set parent of x to y.
 		x.parent = y;
-	}    
+	}   
 
 	// Rotates red black tree right.
 	public void rotateRight(Node y){
@@ -244,7 +241,7 @@ public class RedBlackTrees {
 		}
 	}
 
-	public String getResults(){ return results; }
+	public String getString(){ return results; }
 
     public int size(){ return _size; }
 
