@@ -16,6 +16,12 @@ public class Node {
         isRed = true;
         color = 0; // 0 - RED, 1 - BLACK
     }
+
+    public String colorLabel(){
+        if(color == 0) return "RED";
+
+        return "BLACK";
+    }
     
     //this < that  < 0
     //this > that  > 0
