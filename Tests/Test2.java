@@ -28,7 +28,7 @@ public class Test2 {
             URL dic = new URL(urlName);
             Scanner s = new Scanner(dic.openStream());
             dict.add(s.next());//adds the first line
-            start = System.nanoTime();
+            start = System.currentTimeMillis();
 
             while (s.hasNextLine()) {
 				String str = s.nextLine().trim();
@@ -37,16 +37,16 @@ public class Test2 {
 				if(!rbt.contains(upperStr)) count++;
             }
 
-            end = System.nanoTime();
+            end = System.currentTimeMillis();
             s.close();
         }
 		catch (IOException ex) { ex.printStackTrace(); }
 
 		if(count == 0) System.out.println("All Tests Passed!");
 		else System.out.println("Total Count: " + count);
+        
         float current = end - start;
-
-        System.out.println("Current Time: " + current/10000);
+        System.out.println("Current Time: " + current/10);
     }
     
 }
